@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>files - simple, private file sharing</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="icon" href="../favicon.ico" />
+</head>
+
+<body>
+    <div class="background">
+        <div class="gradient-overlay" aria-hidden="true"></div>
+
+        <div class="container">
+            <header class="header motion is-hidden" id="hdrMotion">
+                <h1 class="title">files.sahildash.dev</h1>
+            </header>
+
+            <div class="download-card motion is-hidden" id="cardMotion">
+                <div class="download-shell">
+                    <section class="dl-left" aria-label="Files">
+                        <div class="dl-left-top">
+                            <div class="dl-count" id="fileCount">0 Files</div>
+
+                            <button class="copy-button dl-all-btn" id="downloadAllBtn" type="button" disabled>
+                                <span class="btn-ico" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                </span>
+                                Download all
+                            </button>
+                        </div>
+
+                        <div class="dl-list" id="downloadFileList" role="list"></div>
+
+                        <div class="dl-empty motion is-hidden" id="downloadEmpty">
+                            <div class="dl-empty-title">No files found</div>
+                            <div class="dl-empty-sub">
+                                This link may be invalid, expired, or the manifest couldn't be loaded.
+                            </div>
+                        </div>
+                    </section>
+
+                    <aside class="dl-right" aria-label="Share">
+                        <div class="dl-right-inner">
+                            <div class="dl-hero">
+                                <div class="dl-hero-title">You've got files!</div>
+
+                                <p class="dl-hero-desc">
+                                    files lets you share files using
+                                    <span class="tooltip-wrap">
+                                        <span class="dl-underline tooltip-trigger">end-to-end encryption</span>
+                                        <span class="tooltip" role="tooltip">
+                                            End-to-end encryption prevents these files from falling into the wrong
+                                            hands. Files can only be unlocked with the correct
+                                            <strong>secret key</strong>. The person who sent you this link has
+                                            shared the secret key with you (it's automatically included in the link)
+                                            so you can access these files. files lets you share files with the exact
+                                            people you want, and no one else.
+                                        </span>
+                                    </span>
+                                    , with a link that automatically expires, so your files can stay private.
+                                </p>
+                            </div>
+
+                            <div class="dl-right-main">
+                                <div class="link-container">
+                                    <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                    </svg>
+
+                                    <input id="pageLink" class="link-input" type="text" readonly />
+
+                                    <button class="copy-button" id="copyPageLinkBtn" type="button">
+                                        Copy
+                                    </button>
+                                </div>
+
+                                <div class="dl-btn-row">
+                                    <button class="secondary-button dl-wide" id="shareBtn" type="button">
+                                        <span class="btn-ico" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"></path>
+                                                <polyline points="16 6 12 2 8 6"></polyline>
+                                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                                            </svg>
+                                        </span>
+                                        Share
+                                    </button>
+
+                                    <button class="secondary-button dl-wide" id="qrBtn" type="button">
+                                        <span class="btn-ico" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path
+                                                    d="M20 18V20H18M20 14H19L17 16M16 18H14V20M4 4H10V10H4V4ZM14 4H20V10H14V4ZM4 14H10V20H4V14ZM14 14V15H15V14H14Z" />
+                                                <path d="M17 7H17.001" />
+                                                <path d="M7 7H7.001" />
+                                                <path d="M7 17H7.001" />
+                                            </svg>
+                                        </span>
+                                        Show QR code
+                                    </button>
+                                </div>
+
+                                <div class="dl-footer-row">
+                                    <div class="dl-expiry" id="expiryText">Expires in 24 hours or after 1 download</div>
+
+                                    <div class="dl-footer-actions">
+                                        <button class="secondary-button dl-home" id="homeBtn" type="button">Upload Files</button>
+                                        <button class="dl-mini-danger" id="deleteBtn" type="button">Delete</button>
+                                    </div>
+                                </div>
+
+                                <div class="dl-progress is-hidden" id="dlProgress">
+                                    <div class="dl-progress-top">
+                                        <div class="dl-progress-title" id="dlProgressTitle">Downloading…</div>
+                                        <div class="dl-progress-pct" id="dlProgressPct">0%</div>
+                                    </div>
+
+                                    <div class="dl-progress-wrap" id="dlProgressWrap" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                                        aria-valuenow="0">
+                                        <div class="dl-progress-bar" id="dlProgressBar"></div>
+                                    </div>
+
+                                    <div class="dl-progress-meta">
+                                        <span id="dlProgressBytes">0 MB / 0 MB</span>
+                                        <span id="dlProgressSpeed">0 MB/s</span>
+                                    </div>
+                                </div>
+
+                                <div class="dl-status" id="downloadStatus" aria-live="polite"></div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            <section class="about-section motion is-hidden" id="aboutMotion">
+                <p class="about-text">
+                    A simple file-sharing service that puts your privacy first. Files are encrypted in your browser,
+                    expire automatically, and are never stored permanently.
+                </p>
+            </section>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" aria-live="polite" aria-atomic="true"></div>
+
+    <div id="confirmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="modal__backdrop" data-close="1"></div>
+
+        <div class="modal__card" role="document">
+            <h2 id="confirmTitle" class="modal__title">Delete upload?</h2>
+            <p class="modal__body">This will permanently delete the upload and can't be undone.</p>
+
+            <div class="modal__actions">
+                <button type="button" id="confirmCancelBtn" class="modal__cancel">Cancel</button>
+                <button type="button" id="confirmOkBtn" class="modal__confirm is-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="qrModal" class="modal" aria-hidden="true">
+        <div class="modal__backdrop" data-close="1"></div>
+
+        <div class="modal__card qr-card" role="dialog" aria-modal="true" aria-label="QR code">
+            <button id="qrCloseBtn" class="qr-x qr-x--float" type="button" aria-label="Close" data-close="1">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z"
+                        fill="currentColor" />
+                </svg>
+            </button>
+
+            <div class="qr-center">
+                <div class="qr-frame qr-frame--center">
+                    <canvas id="qrCanvas" width="256" height="256"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/sodium.js"></script>
+    <script type="module">
+        import { Zstd } from "https://cdn.jsdelivr.net/npm/@hpcc-js/wasm-zstd/dist/index.min.js";
+
+        await sodium.ready;
+        window.zstd = await Zstd.load();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/web-streams-polyfill@4.2.0/dist/ponyfill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/streamsaver@2.0.6/StreamSaver.js"></script>
+    <script src="/zip-stream.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+
+    <script src="./script.js"></script>
+</body>
+
+</html>

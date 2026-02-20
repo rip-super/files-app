@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>files - simple, private file sharing</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <div class="global-drop-overlay" id="globalDropOverlay" aria-hidden="true">
+        <div class="global-drop-card">
+            <svg class="global-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <div class="global-drop-text">
+                <div class="global-drop-title">Drop to upload</div>
+                <div class="global-drop-subtitle">Release your files anywhere</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="background">
+        <div class="gradient-overlay"></div>
+
+        <div class="container">
+            <div class="header motion is-hidden" id="hdrMotion">
+                <h1 class="title">files.sahildash.dev</h1>
+            </div>
+
+            <div class="upload-card motion is-hidden" id="cardMotion">
+                <div class="card-header">
+                    <h2 class="card-title">Simple, private file sharing</h2>
+                </div>
+
+                <div class="drop-zone" id="dropZone">
+                    <input type="file" id="fileInput" class="file-input" multiple />
+
+                    <div class="drop-content motion" id="dropContent">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+
+                        <label for="fileInput" class="select-button">Select files to send</label>
+                        <p class="drop-text">or drag and drop anywhere</p>
+                        <p class="size-text">Send up to 10 GB</p>
+                    </div>
+
+                    <div class="file-list motion is-hidden" id="fileList"></div>
+
+                    <div class="streaming motion is-hidden" id="streaming">
+                        <div class="status-line" id="statusLine" aria-live="polite">
+                        </div>
+
+                        <div class="link-container">
+                            <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                            </svg>
+                            <input type="text" id="shareLink" class="link-input" readonly />
+                            <button class="copy-button" id="copyButton" type="button">Copy</button>
+                        </div>
+
+                        <div class="expiry-row" id="expiryRow">
+                            <span>Your files will be deleted</span>
+
+                            <select class="expiry-select js-custom-select" id="expiryTime">
+                                <option value="15m">after 15 minutes</option>
+                                <option value="1h">after 1 hour</option>
+                                <option value="24h" selected>after 1 day</option>
+                                <option value="7d">after 7 days</option>
+                            </select>
+
+                            <span>or</span>
+
+                            <select class="expiry-select js-custom-select" id="expiryDownloads">
+                                <option value="1" selected>after 1 download</option>
+                                <option value="10">after 10 downloads</option>
+                                <option value="25">after 25 downloads</option>
+                                <option value="100">after 100 downloads</option>
+                            </select>
+                        </div>
+
+                        <div class="progress-wrap" id="progressWrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+
+                        <div class="uploading-meta" id="uploadingMeta">
+                            <span id="progressPct">0%</span>
+                            <span id="progressBytes">0 MB / 0 MB</span>
+                        </div>
+
+                        <div class="streaming-actions">
+                            <div class="actions-row">
+                                <button class="secondary-button" id="previewButton" type="button">Preview files</button>
+                                <div class="actions-right">
+                                    <button class="copy-button" id="deleteFilesButton" type="button" disabled>Delete files</button>
+                                </div>
+                            </div>
+                            <button class="secondary-button wide-button" id="resetButton" type="button">Upload more files</button>
+                        </div>
+
+                        <div class="preview collapse is-collapsed" id="preview">
+                            <div class="preview-header">
+                                <h3 class="preview-title">Files</h3>
+                                <button class="ghost-button" id="closePreviewButton" type="button">Close</button>
+                            </div>
+                            <div class="preview-grid" id="previewGrid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-section motion is-hidden" id="aboutMotion">
+                <p class="about-text">
+                    A simple file-sharing service that puts your privacy first. Files are encrypted in your browser,
+                    expire automatically, and are never stored permanently. Perfect for fast, secure file sharing.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" aria-live="polite" aria-atomic="true"></div>
+
+    <div id="confirmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="modal__backdrop" data-close="1"></div>
+
+        <div class="modal__card" role="document">
+            <h2 id="confirmTitle" class="modal__title">Delete upload?</h2>
+            <p class="modal__body">This will permanently delete the upload and can't be undone.</p>
+
+            <div class="modal__actions">
+                <button type="button" id="confirmCancelBtn" class="modal__cancel">Cancel</button>
+                <button type="button" id="confirmOkBtn" class="modal__confirm is-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="sodium.js"></script>
+    <script type="module">
+        import { Zstd } from "https://cdn.jsdelivr.net/npm/@hpcc-js/wasm-zstd/dist/index.min.js";
+        await sodium.ready;
+        window.zstd = await Zstd.load();
+    </script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,19 @@
+{
+    "name": "files",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "dev": "nodemon server.js --ignore uploads/",
+        "start": "node server.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "dependencies": {
+        "check-disk-space": "^3.4.0",
+        "express": "^5.2.1",
+        "nodemon": "^3.1.11"
+    }
+}
