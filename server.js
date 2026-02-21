@@ -1,6 +1,3 @@
-// TODO:
-// - mobile styles
-
 const crypto = require("crypto");
 const fs = require("fs");
 const express = require("express");

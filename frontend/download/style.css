@@ -1013,3 +1013,93 @@ body.modal-open .background {
 .qr-center {
     padding-top: 6px;
 }
+
+@media (max-width: 600px) {
+
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    .background {
+        overflow-x: hidden;
+    }
+
+    .download-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .dl-left,
+    .dl-right,
+    .dl-item,
+    .dl-meta {
+        min-width: 0;
+    }
+
+    .dl-meta {
+        width: 100%;
+    }
+
+    .dl-name {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .dl-rightslot {
+        min-width: 0;
+        flex: 0 0 auto;
+        max-width: 45%;
+    }
+
+    .dl-size {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .dl-download-one {
+        max-width: 100%;
+        white-space: nowrap;
+    }
+
+    .dl-footer-actions {
+        margin-top: 10px;
+    }
+
+    .link-container {
+        min-width: 0;
+    }
+
+    .link-input {
+        min-width: 0;
+    }
+
+    .tooltip {
+        max-width: 92vw;
+    }
+
+    .qr-card {
+        width: min(520px, calc(100vw - 28px));
+        max-width: calc(100vw - 28px);
+    }
+
+    .qr-frame--center {
+        width: min(320px, 78vw);
+        height: min(320px, 78vw);
+    }
+
+    .qr-card {
+        padding-top: 56px;
+    }
+
+    .qr-x--float {
+        top: 14px;
+        right: 14px;
+    }
+
+    #qrCanvas {
+        width: min(256px, 62vw);
+        height: min(256px, 62vw);
+    }
+}
