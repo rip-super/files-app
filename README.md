@@ -1,7 +1,7 @@
-<img width="375" height="375" alt="Screenshot 2026-02-21 004511" src="https://github.com/user-attachments/assets/a2e34d20-dcb4-423e-b339-9e9f314111e8" />
-<img width="375" height="375" alt="Screenshot 2026-02-21 004541" src="https://github.com/user-attachments/assets/ba402dcb-9249-43d3-9d52-9c289f45934e" />
-<img width="375" height="375" alt="Screenshot 2026-02-21 004557" src="https://github.com/user-attachments/assets/20ed71f0-6904-4a28-9fdb-10756ce4c09e" />
-<img width="375" height="375" alt="Screenshot 2026-02-21 004609" src="https://github.com/user-attachments/assets/f4e81985-5382-43b3-8cf4-9a45b07a0346" />
+<img width="545" height="375" alt="Screenshot 2026-02-21 004511" src="https://github.com/user-attachments/assets/a2e34d20-dcb4-423e-b339-9e9f314111e8" />
+<img width="562" height="423" alt="Screenshot 2026-02-21 004541" src="https://github.com/user-attachments/assets/ba402dcb-9249-43d3-9d52-9c289f45934e" />
+<img width="531" height="455" alt="Screenshot 2026-02-21 004557" src="https://github.com/user-attachments/assets/20ed71f0-6904-4a28-9fdb-10756ce4c09e" />
+<img width="676" height="399" alt="Screenshot 2026-02-21 004609" src="https://github.com/user-attachments/assets/f4e81985-5382-43b3-8cf4-9a45b07a0346" />
 
 # Files App
 
