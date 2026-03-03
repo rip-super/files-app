@@ -1061,6 +1061,16 @@ body.modal-open .background {
     .dl-download-one {
         max-width: 100%;
         white-space: nowrap;
+        padding: 8px;
+        gap: 0;
+    }
+
+    .dl-download-one .dl-download-text {
+        display: none;
+    }
+
+    .dl-download-one svg {
+        margin: 0;
     }
 
     .dl-footer-actions {
