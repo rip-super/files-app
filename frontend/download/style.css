@@ -44,6 +44,7 @@ body {
     height: 100%;
     background: linear-gradient(115deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg1) 110%);
     background-attachment: fixed;
+    background-color: #3b7fc7;
 }
 
 body {
@@ -51,14 +52,6 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: var(--text);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    * {
-        transition: none !important;
-        animation: none !important;
-        scroll-behavior: auto !important;
-    }
 }
 
 .background {
@@ -1061,16 +1054,6 @@ body.modal-open .background {
     .dl-download-one {
         max-width: 100%;
         white-space: nowrap;
-        padding: 8px;
-        gap: 0;
-    }
-
-    .dl-download-one .dl-download-text {
-        display: none;
-    }
-
-    .dl-download-one svg {
-        margin: 0;
     }
 
     .dl-footer-actions {
