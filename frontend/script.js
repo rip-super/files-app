@@ -568,7 +568,7 @@ async function startUpload() {
 
     const key = sodium.crypto_aead_chacha20poly1305_ietf_keygen();
     const keyb64 = sodium.to_base64(key, sodium.base64_variants.URLSAFE_NO_PADDING);
-    shareLink.value = `https://files.sahildash.dev/${id}#${keyb64}`;
+    shareLink.value = `${API_URL}/${id}#${keyb64}`;
 
     const r = await fetch(`${API_URL}/uploads/${id}/manifest`, {
         method: "POST",
