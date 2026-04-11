@@ -1,5 +1,5 @@
 const MAX_TOTAL_BYTES = 10 * 1024 * 1024 * 1024;
-const API_URL = "http://localhost:8080";
+const API_URL = "https://files.sahildash.dev";
 
 const ICONS = {
     image: "/icons/image.svg",
