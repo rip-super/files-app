@@ -1,4 +1,4 @@
-const API_URL = "https://files.sahildash.dev";
+const API_URL = "http://localhost:8080";
 
 const ICONS = {
     image: "/icons/image.svg",

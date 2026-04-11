@@ -129,9 +129,10 @@ app.post("/uploads/:id/data", async (req, res) => {
         const prev = uploadLocks.get(id) || Promise.resolve();
 
         let release;
-        const gate = new Promise(r => (release = r));
+        const current = new Promise(r => { release = r; });
+        const chained = prev.then(() => current);
 
-        uploadLocks.set(id, prev.then(() => gate));
+        uploadLocks.set(id, chained);
 
         await prev;
 
@@ -139,7 +140,9 @@ app.post("/uploads/:id/data", async (req, res) => {
             return await fn();
         } finally {
             release();
-            if (uploadLocks.get(id) === gate) uploadLocks.delete(id);
+            if (uploadLocks.get(id) === chained) {
+                uploadLocks.delete(id);
+            }
         }
     }
 
@@ -148,12 +151,19 @@ app.post("/uploads/:id/data", async (req, res) => {
         let len = 0;
 
         return {
-            push(b) { if (b?.length) { bufs.push(b); len += b.length; } },
-            size() { return len; },
-
+            push(b) {
+                if (b?.length) {
+                    bufs.push(b);
+                    len += b.length;
+                }
+            },
+            size() {
+                return len;
+            },
             peek(n) {
                 if (len < n) return null;
                 if (bufs[0].length >= n) return bufs[0].subarray(0, n);
+
                 const out = Buffer.allocUnsafe(n);
                 let off = 0;
                 for (const buf of bufs) {
@@ -164,9 +174,9 @@ app.post("/uploads/:id/data", async (req, res) => {
                 }
                 return out;
             },
-
             read(n) {
                 if (len < n) return null;
+
                 const out = Buffer.allocUnsafe(n);
                 let off = 0;
 
@@ -181,6 +191,7 @@ app.post("/uploads/:id/data", async (req, res) => {
                     off += take;
                     len -= take;
                 }
+
                 return out;
             }
         };
@@ -211,21 +222,45 @@ app.post("/uploads/:id/data", async (req, res) => {
         const dataStream = fs.createWriteStream(dataPath, { flags: "a" });
         const indexStream = fs.createWriteStream(indexPath, { flags: "a" });
 
-        function cleanup(err) {
-            dataStream.destroy();
-            indexStream.destroy();
-            if (err) console.error(`[UPLOAD DATA] ${id} error:`, err.message || err);
+        let aborted = false;
+        let cleanedUp = false;
+
+        const onAborted = () => {
+            aborted = true;
+            console.log(`[UPLOAD DATA] ${id} aborted`);
+        };
+
+        const onReqError = (err) => {
+            aborted = true;
+            console.error(`[UPLOAD DATA] ${id} request error:`, err.message || err);
+        };
+
+        const onResClose = () => {
+            if (!res.writableEnded) aborted = true;
+        };
+
+        req.on("aborted", onAborted);
+        req.on("error", onReqError);
+        res.on("close", onResClose);
+
+        function detachListeners() {
+            req.off("aborted", onAborted);
+            req.off("error", onReqError);
+            res.off("close", onResClose);
         }
 
-        req.on("aborted", () => {
-            console.log(`[UPLOAD DATA] ${id} aborted`);
-            cleanup(new Error("request aborted"));
-        });
+        function cleanup(err) {
+            if (cleanedUp) return;
+            cleanedUp = true;
 
-        req.on("error", (err) => {
-            console.error(`[UPLOAD DATA] ${id} request error:`, err.message);
-            cleanup(err);
-        });
+            detachListeners();
+            dataStream.destroy();
+            indexStream.destroy();
+
+            if (err) {
+                console.error(`[UPLOAD DATA] ${id} error:`, err.message || err);
+            }
+        }
 
         let offset = 0;
         try {
@@ -233,8 +268,16 @@ app.post("/uploads/:id/data", async (req, res) => {
         } catch { }
 
         async function writeTo(stream, buf) {
+            if (aborted || req.destroyed || stream.destroyed) {
+                throw new Error("request aborted");
+            }
+
             if (!stream.write(buf)) {
                 await once(stream, "drain");
+
+                if (aborted || req.destroyed || stream.destroyed) {
+                    throw new Error("request aborted");
+                }
             }
         }
 
@@ -243,9 +286,13 @@ app.post("/uploads/:id/data", async (req, res) => {
 
         try {
             for await (const chunk of req) {
+                if (aborted) throw new Error("request aborted");
+
                 r.push(chunk);
 
                 while (r.size() >= 8) {
+                    if (aborted) throw new Error("request aborted");
+
                     const hdr = r.peek(8);
                     const chunkIndex = hdr.readUInt32BE(0);
                     const payloadLen = hdr.readUInt32BE(4);
@@ -270,21 +317,32 @@ app.post("/uploads/:id/data", async (req, res) => {
                     frames++;
                 }
 
-                if (r.size() > 16 * 1024 * 1024) throw new Error("Framing buffer too large");
+                if (r.size() > 16 * 1024 * 1024) {
+                    throw new Error("Framing buffer too large");
+                }
             }
 
+            if (aborted) throw new Error("request aborted");
             if (r.size() !== 0) throw new Error("Upload ended with incomplete frame");
 
             dataStream.end();
             indexStream.end();
-            await Promise.all([once(dataStream, "finish"), once(indexStream, "finish")]);
+            await Promise.all([
+                once(dataStream, "finish"),
+                once(indexStream, "finish")
+            ]);
 
-            res.status(204).end();
+            detachListeners();
 
+            if (!res.headersSent) {
+                res.status(204).end();
+            }
         } catch (err) {
-            console.error(`[UPLOAD DATA] ${id} failed:`, err.message || err);
             cleanup(err);
-            if (!res.headersSent) res.status(500).json({ error: String(err.message || err) });
+
+            if (!res.headersSent && !req.destroyed && !aborted) {
+                res.status(500).json({ error: String(err.message || err) });
+            }
         }
     });
 });

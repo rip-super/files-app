@@ -1,5 +1,5 @@
 const MAX_TOTAL_BYTES = 10 * 1024 * 1024 * 1024;
-const API_URL = "https://files.sahildash.dev";
+const API_URL = "http://localhost:8080";
 
 const ICONS = {
     image: "/icons/image.svg",
@@ -583,8 +583,8 @@ async function startUpload() {
     }
 
     const chunkSize = 1024 * 1024;
-    const TARGET_BATCH_BYTES = 95 * 1024 * 1024;
-    const MAX_BATCH_BYTES = TARGET_BATCH_BYTES - (512 * 1024);
+    const TARGET_BATCH_BYTES = 8 * 1024 * 1024;
+    const MAX_BATCH_BYTES = TARGET_BATCH_BYTES - (128 * 1024);
     const FRAME_OVERHEAD = 8;
     const MAX_IN_FLIGHT = 1;
 
