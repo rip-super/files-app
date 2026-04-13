@@ -1350,11 +1350,40 @@ function confirmModal({ title, message }) {
 }
 
 function wireEvents() {
+    const onMessage = (event) => {
+        if (event.origin !== "https://stash.sahildash.dev") return;
+
+        if (event.data?.type === "stash:ping") {
+            try {
+                event.source?.postMessage(
+                    { type: "stash:ready" },
+                    event.origin
+                );
+            } catch (err) {
+                console.error("Failed to reply ready:", err);
+            }
+            return;
+        }
+
+        if (event.data?.type === "stash:files") {
+            const files = (event.data.files || []).map((f) =>
+                new File(
+                    [f.buffer],
+                    f.name,
+                    { type: f.type || "application/octet-stream" }
+                )
+            );
+
+            if (files.length) handleFiles(files);
+        }
+    };
+
+    window.addEventListener("message", onMessage);
+
     window.addEventListener("DOMContentLoaded", () => {
         const hdr = document.getElementById("hdrMotion");
         const card = document.getElementById("cardMotion");
         const about = document.getElementById("aboutMotion");
-
 
         raf2(() => {
             hdr && hdr.classList.remove("is-hidden");
