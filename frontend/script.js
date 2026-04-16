@@ -1351,7 +1351,7 @@ function confirmModal({ title, message }) {
 
 function wireEvents() {
     const onMessage = (event) => {
-        if (event.origin !== "https://stash.sahildash.dev") return;
+        if (!["https://stash.sahildash.dev", "http://localhost:6003"].includes(event.origin)) return;
 
         if (event.data?.type === "stash:ping") {
             try {
